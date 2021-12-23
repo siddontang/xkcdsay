@@ -25,11 +25,11 @@ import (
 )
 
 var (
-	host     = flag.String("H", "", "Host")
+	host     = flag.String("H", "tidb.5b486b69.1ef404eb.us-west-2.prod.aws.tidbcloud.com", "Host")
 	port     = flag.Int("P", 4000, "Port")
-	user     = flag.String("u", "root", "user")
-	password = flag.String("pass", "12345678", "password")
-	database = flag.String("D", "test", "database")
+	user     = flag.String("u", "guest", "user")
+	password = flag.String("pass", "11111111", "password")
+	database = flag.String("D", "xkcd", "database")
 )
 
 func panicErr(err error) {

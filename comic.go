@@ -20,7 +20,7 @@ type Comic struct {
 	Day     string `json:"day"`
 	Title   string `json:"title"`
 	Alt     string `json:"alt"`
-	Link    string `json:"img"`
+	ImgUrl  string `json:"img"`
 	Content []byte `json:"_"`
 }
 
@@ -44,7 +44,7 @@ func GetComic(n int) (*Comic, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("invalid status code %d", resp.StatusCode)
+		return nil, fmt.Errorf("get meta failed, invalid status code %d", resp.StatusCode)
 	}
 
 	var c Comic
@@ -53,28 +53,48 @@ func GetComic(n int) (*Comic, error) {
 		return nil, err
 	}
 
-	c.Content, err = getImage(c.Link)
+	if err = c.downImg(); err != nil {
+		return nil, err
+	}
 
 	return &c, err
 }
 
-func getImage(link string) ([]byte, error) {
-	resp, err := http.Get(link)
+const noRefImgUrl = "https://imgs.xkcd.com/comics/"
+
+func (c *Comic) downImg() error {
+	// corner cases
+	if c.ImgUrl == noRefImgUrl {
+		if c.Num == 1608 {
+			// the img link in info json is https://imgs.xkcd.com/comics
+			// but the real link is https://xkcd.com/1608/1000:-1074+s.png
+			c.ImgUrl = "https://xkcd.com/1608/1000:-1074+s.png"
+		}
+
+		// TODO: refine img URL if possible
+
+		// For 1663
+		// We can't find the real img URL
+		return nil
+	}
+
+	resp, err := http.Get(c.ImgUrl)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	defer resp.Body.Close()
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("invalid status code %d", resp.StatusCode)
+		return fmt.Errorf("get image failed: invalid status code %d", resp.StatusCode)
 	}
 
-	return ioutil.ReadAll(resp.Body)
+	c.Content, err = ioutil.ReadAll(resp.Body)
+	return err
 }
 
 func (c *Comic) Save(db *sql.DB) error {
 	_, err := db.Exec("replace into xkcd (xkcd_id, title, url, file_content, date_published, alt) values (?, ?, ?, ?, ?, ?)",
-		c.Num, c.Title, fmt.Sprintf("http://xkcd.com/%d/", c.Num),
+		c.Num, c.Title, fmt.Sprintf("https://xkcd.com/%d/", c.Num),
 		base64.StdEncoding.EncodeToString(c.Content),
 		fmt.Sprintf("%s-%s-%s", c.Year, c.Month, c.Day), c.Alt)
 	return err
