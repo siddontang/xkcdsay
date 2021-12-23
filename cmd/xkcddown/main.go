@@ -37,7 +37,7 @@ func dumpComic(w *csv.Writer, c *xkcdsay.Comic) {
 }
 
 func main() {
-	current, err := xkcdsay.GetComic(0)
+	current, err := xkcdsay.GetComicMeta(0)
 	panicErr(err)
 
 	n := current.Num

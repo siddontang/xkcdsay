@@ -1,8 +1,6 @@
 package xkcdsay
 
 import (
-	"database/sql"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	_ "image/gif"
@@ -29,8 +27,9 @@ const (
 	currentComicUrl string = "https://xkcd.com/info.0.json"
 )
 
-// GetComic gets a Comic from xkcd. If n = 0, gets the current comic
-func GetComic(n int) (*Comic, error) {
+// GetComicMeta gets a Comic meta from xkcd. If n = 0, gets the current comic
+// This function will not down the image, you need to call DownImg later.
+func GetComicMeta(n int) (*Comic, error) {
 	url := currentComicUrl
 	if n > 0 {
 		url = fmt.Sprintf(comicUrl, n)
@@ -52,17 +51,27 @@ func GetComic(n int) (*Comic, error) {
 	if err = d.Decode(&c); err != nil {
 		return nil, err
 	}
+	return &c, err
+}
 
-	if err = c.downImg(); err != nil {
+// GetComic gets a Comic from xkcd. If n = 0, gets the current comic
+func GetComic(n int) (*Comic, error) {
+	c, err := GetComicMeta(n)
+	if err != nil {
 		return nil, err
 	}
 
-	return &c, err
+	if err = c.DownImg(); err != nil {
+		return nil, err
+	}
+
+	return c, err
 }
 
 const noRefImgUrl = "https://imgs.xkcd.com/comics/"
 
-func (c *Comic) downImg() error {
+// DownImg downs the image
+func (c *Comic) DownImg() error {
 	// corner cases
 	if c.ImgUrl == noRefImgUrl {
 		if c.Num == 1608 {
@@ -89,13 +98,5 @@ func (c *Comic) downImg() error {
 	}
 
 	c.Content, err = ioutil.ReadAll(resp.Body)
-	return err
-}
-
-func (c *Comic) Save(db *sql.DB) error {
-	_, err := db.Exec("replace into xkcd (xkcd_id, title, url, file_content, date_published, alt) values (?, ?, ?, ?, ?, ?)",
-		c.Num, c.Title, fmt.Sprintf("https://xkcd.com/%d/", c.Num),
-		base64.StdEncoding.EncodeToString(c.Content),
-		fmt.Sprintf("%s-%s-%s", c.Year, c.Month, c.Day), c.Alt)
 	return err
 }

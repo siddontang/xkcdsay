@@ -30,6 +30,7 @@ var (
 	user     = flag.String("u", "guest", "user")
 	password = flag.String("pass", "11111111", "password")
 	database = flag.String("D", "xkcd", "database")
+	num      = flag.Int("n", 0, "comic num, 0 is for current, if not set, randomly choose")
 )
 
 func panicErr(err error) {
@@ -79,19 +80,26 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	dsn := fmt.Sprintf("%s@tcp(%s:%d)/%s?", strings.Join([]string{*user, *password}, ":"),
+	dsn := fmt.Sprintf("%s@tcp(%s:%d)/%s", strings.Join([]string{*user, *password}, ":"),
 		*host, *port, *database)
 	db, err := sql.Open("mysql", dsn)
 	panicErr(err)
 	defer db.Close()
 
-	row := db.QueryRow("select count(1) from xkcd")
+	row := db.QueryRow("select max(xkcd_id) from xkcd")
 	panicErr(row.Err())
-	var count int
-	err = row.Scan(&count)
+	var maxID int
+	err = row.Scan(&maxID)
 	panicErr(err)
 
-	id := rand.Intn(count) + 1
+	id := *num
+
+	if *num == 0 {
+		id = maxID
+	} else if *num < 0 || *num > maxID {
+		id = rand.Intn(maxID) + 1
+	}
+
 	row = db.QueryRow(fmt.Sprintf("select url, file_content from xkcd where xkcd_id = %d;", id))
 	panicErr(row.Err())
 
