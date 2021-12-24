@@ -8,4 +8,7 @@ require (
 	github.com/mattn/go-sixel v0.0.1
 )
 
-require github.com/soniakeys/quant v1.0.0 // indirect
+require (
+	github.com/aws/aws-lambda-go v1.27.1 // indirect
+	github.com/soniakeys/quant v1.0.0 // indirect
+)

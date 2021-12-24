@@ -1,6 +1,8 @@
 package xkcdsay
 
 import (
+	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	_ "image/gif"
@@ -98,5 +100,15 @@ func (c *Comic) DownImg() error {
 	}
 
 	c.Content, err = ioutil.ReadAll(resp.Body)
+	return err
+}
+
+// Save saves the comic to DB
+func (c *Comic) Save(db *sql.DB) error {
+	_, err := db.Exec("replace into xkcd (xkcd_id, title, url, file_content, date_published, alt) values (?, ?, ?, ?, ?, ?)",
+		c.Num, c.Title,
+		fmt.Sprintf("https://xkcd.com/%d/", c.Num),
+		base64.StdEncoding.EncodeToString(c.Content),
+		fmt.Sprintf("%s-%s-%s", c.Year, c.Month, c.Day), c.Alt)
 	return err
 }

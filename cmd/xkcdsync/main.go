@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"encoding/base64"
 	"flag"
 	"fmt"
 	"strings"
@@ -28,18 +27,6 @@ func panicErr(err error) {
 	panic(err.Error())
 }
 
-// Save saves the comic to DB
-func saveComic(db *sql.DB, c *xkcdsay.Comic) error {
-	url := fmt.Sprintf("https://xkcd.com/%d/", c.Num)
-	fmt.Printf("save %s\n", url)
-
-	_, err := db.Exec("replace into xkcd (xkcd_id, title, url, file_content, date_published, alt) values (?, ?, ?, ?, ?, ?)",
-		c.Num, c.Title, url,
-		base64.StdEncoding.EncodeToString(c.Content),
-		fmt.Sprintf("%s-%s-%s", c.Year, c.Month, c.Day), c.Alt)
-	return err
-}
-
 func main() {
 	flag.Parse()
 
@@ -61,7 +48,10 @@ func main() {
 	for id := maxID + 1; id <= current.Num; id++ {
 		c, err := xkcdsay.GetComic(id)
 		panicErr(err)
-		err = saveComic(db, c)
+
+		fmt.Printf("syncing https://xkcd.com/%d/", c.Num)
+
+		err = c.Save(db)
 		panicErr(err)
 	}
 }
