@@ -30,7 +30,7 @@ var (
 	user     = flag.String("u", "guest", "user")
 	password = flag.String("pass", "11111111", "password")
 	database = flag.String("D", "xkcd", "database")
-	num      = flag.Int("n", 0, "comic num, 0 is for current, if not set, randomly choose")
+	num      = flag.Int("n", 0, "comic num, 0 means viewing a comic randomly, -n means the last nth one, n means the first nth one")
 )
 
 func panicErr(err error) {
@@ -94,10 +94,20 @@ func main() {
 
 	id := *num
 
-	if *num == 0 {
-		id = maxID
-	} else if *num < 0 || *num > maxID {
+	if *num == 0 || *num > maxID {
 		id = rand.Intn(maxID) + 1
+	} else if *num < 0 {
+		// -1 means the last one
+		id = *num + maxID + 1
+		if id <= 0 {
+			id = rand.Intn(maxID) + 1
+		}
+	}
+
+	if id == 404 {
+		// aha, 404 really means 404 for xkcd
+		println("404 is not existed in xkcd")
+		return
 	}
 
 	row = db.QueryRow(fmt.Sprintf("select url, file_content from xkcd where xkcd_id = %d;", id))
