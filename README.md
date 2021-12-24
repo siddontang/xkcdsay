@@ -17,10 +17,14 @@ make
 ```bash
 # Randomly see a comic 
 ./bin/xkcdsay 
-
-# See the newest one currently
-./bin/xkcdsay -n -1
-
-# See the 10th comic
-./bin/xkcdsay -n 10
 ```
+
+![image](https://user-images.githubusercontent.com/1080370/147331905-4247319c-340d-45bf-938e-fd04eef779b5.png)
+
+```bash
+# See the 1st comic
+./bin/xkcdsay -n 1
+```
+
+
+![image](https://user-images.githubusercontent.com/1080370/147331792-1f6b2769-ddf1-4e11-9afa-d7e623f7b32d.png)
