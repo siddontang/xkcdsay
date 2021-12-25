@@ -42,3 +42,4 @@ xkcdsay -n 1
 ## TODO - Need help
 
 - [ ] support comic cache for xkcdsay
+- [ ] add an ASCII art support like cowsay for the saying words

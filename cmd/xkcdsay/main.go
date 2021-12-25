@@ -80,6 +80,8 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
+	words := flag.Args()
+
 	dsn := fmt.Sprintf("%s@tcp(%s:%d)/%s", strings.Join([]string{*user, *password}, ":"),
 		*host, *port, *database)
 	db, err := sql.Open("mysql", dsn)
@@ -120,7 +122,12 @@ func main() {
 	err = row.Scan(&url, &content)
 	panicErr(err)
 
-	fmt.Printf("xkcd url: %s\n", url)
+	fmt.Printf("View: %s\n", url)
+
+	if len(words) > 0 {
+		fmt.Printf("Say: %s\n", strings.Join(words, " "))
+	}
+
 	data, err := base64.StdEncoding.DecodeString(content)
 	panicErr(err)
 
