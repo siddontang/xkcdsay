@@ -6,24 +6,34 @@ All commic data of `xkcdsay` is downloaded from XKCD and is saved to a [TiDB](ht
 
 [**You can singup and try TiDB cloud for Free**](https://tidbcloud.com/signup)
 
-## Build
+## Build from the source
 
 ```bash
+git clone https://github.com/siddontang/xkcdsay.git
+cd xkcdsay
 make
+
+# the xkcdsay binary will be installed in the current ./bin/xkcdsay
+```
+
+## Install with Homebrew
+
+```bash
+brew install siddontang/brew/xkcdsay
 ```
 
 ## Usage
 
 ```bash
 # Randomly see a comic 
-./bin/xkcdsay 
+xkcdsay 
 ```
 
 ![image](https://user-images.githubusercontent.com/1080370/147331905-4247319c-340d-45bf-938e-fd04eef779b5.png)
 
 ```bash
 # See the 1st comic
-./bin/xkcdsay -n 1
+xkcdsay -n 1
 ```
 
 
@@ -32,4 +42,3 @@ make
 ## TODO - Need help
 
 - [ ] support comic cache for xkcdsay
-- [ ] support homebrew like `brew install xkcdsay`
