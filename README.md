@@ -28,3 +28,8 @@ make
 
 
 ![image](https://user-images.githubusercontent.com/1080370/147331792-1f6b2769-ddf1-4e11-9afa-d7e623f7b32d.png)
+
+## TODO - Need help
+
+- [ ] support comic cache for xkcdsay
+- [ ] support homebrew like `brew install xkcdsay`
