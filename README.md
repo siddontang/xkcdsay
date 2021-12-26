@@ -47,5 +47,7 @@ xkcdsay -n 1
 
 ## TODO - Need help
 
+- [ ] Find a better way to show the image when the Terminal doesn't support Sixel
 - [ ] support comic cache for xkcdsay
 - [ ] add an ASCII art support like cowsay for the saying words
+
