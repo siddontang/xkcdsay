@@ -6,6 +6,11 @@ All commic data of `xkcdsay` is downloaded from XKCD and is saved to a [TiDB](ht
 
 [**You can singup and try TiDB cloud for Free**](https://tidbcloud.com/signup)
 
+## Limitation
+
+xkcdsay uses [Sixel](https://en.wikipedia.org/wiki/Sixel) to show the image in the terminal. If you don't know whether your terminal supports Sixel or not, you can refer to [Terminal-requirements](https://github.com/saitoha/libsixel#terminal-requirements).
+
+
 ## Build from the source
 
 ```bash
@@ -38,6 +43,7 @@ xkcdsay -n 1
 
 
 ![image](https://user-images.githubusercontent.com/1080370/147331792-1f6b2769-ddf1-4e11-9afa-d7e623f7b32d.png)
+
 
 ## TODO - Need help
 
