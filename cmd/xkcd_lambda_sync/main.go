@@ -31,9 +31,9 @@ func getEnvWithDefault(key string, defaultValue string) string {
 }
 
 func init() {
-	user := getEnvWithDefault("USER", "root")
+	user := getEnvWithDefault("USER", "4A7D3bbkQWsWSEH.root")
 	password := getEnvWithDefault("PASS", "")
-	host := getEnvWithDefault("HOST", "tidb.b68f76dc.1ef404eb.us-west-2.prod.aws.tidbcloud.com")
+	host := getEnvWithDefault("HOST", "gateway01.us-west-2.prod.aws.tidbcloud.com")
 	port := getEnvWithDefault("PORT", "4000")
 	database := getEnvWithDefault("DB", "xkcd")
 

@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	host     = flag.String("H", "tidb.b68f76dc.1ef404eb.us-west-2.prod.aws.tidbcloud.com", "Host")
+	host     = flag.String("H", "gateway01.us-west-2.prod.aws.tidbcloud.com", "Host")
 	port     = flag.Int("P", 4000, "Port")
-	user     = flag.String("u", "guest", "user")
+	user     = flag.String("u", "4A7D3bbkQWsWSEH.guest", "user")
 	password = flag.String("pass", "11111111", "password")
 	database = flag.String("D", "xkcd", "database")
 )
