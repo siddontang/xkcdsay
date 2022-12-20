@@ -1,26 +1,20 @@
 package main
 
 import (
+	"crypto/tls"
 	"database/sql"
 	"fmt"
 	"log"
 	"os"
-	"strings"
+	"strconv"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/siddontang/xkcdsay"
 )
 
 var db *sql.DB
-
-func panicErr(err error) {
-	if err == nil {
-		return
-	}
-
-	panic(err.Error())
-}
 
 func getEnvWithDefault(key string, defaultValue string) string {
 	value := os.Getenv(key)
@@ -31,22 +25,23 @@ func getEnvWithDefault(key string, defaultValue string) string {
 }
 
 func init() {
-	user := getEnvWithDefault("USER", "4A7D3bbkQWsWSEH.root")
+	user := getEnvWithDefault("USER", xkcdsay.DefaultRoot)
 	password := getEnvWithDefault("PASS", "")
-	host := getEnvWithDefault("HOST", "gateway01.us-west-2.prod.aws.tidbcloud.com")
-	port := getEnvWithDefault("PORT", "4000")
-	database := getEnvWithDefault("DB", "xkcd")
+	host := getEnvWithDefault("HOST", xkcdsay.DefaultHost)
+	port, _ := strconv.Atoi(getEnvWithDefault("PORT", strconv.Itoa(xkcdsay.DefaultPort)))
+	database := getEnvWithDefault("DB", xkcdsay.DefaultDB)
 
-	dsn := fmt.Sprintf("%s@tcp(%s:%s)/%s", strings.Join([]string{user, password}, ":"),
-		host, port, database)
-	var err error
-	db, err = sql.Open("mysql", dsn)
-	panicErr(err)
+	mysql.RegisterTLSConfig("tidb", &tls.Config{
+		MinVersion: tls.VersionTLS12,
+		ServerName: host,
+	})
+
+	db = xkcdsay.OpenDB(user, password, host, port, database)
 }
 
 func SyncHandler() (string, error) {
 	row := db.QueryRow("select max(xkcd_id) from xkcd")
-	panicErr(row.Err())
+	xkcdsay.PanicErr(row.Err())
 	var maxID int
 	if err := row.Scan(&maxID); err != nil {
 		return "", err

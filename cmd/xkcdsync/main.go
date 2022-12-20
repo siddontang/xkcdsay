@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"database/sql"
 	"flag"
 	"fmt"
@@ -8,15 +9,16 @@ import (
 
 	"github.com/siddontang/xkcdsay"
 
+	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
-	host     = flag.String("H", "gateway01.us-west-2.prod.aws.tidbcloud.com", "Host")
-	port     = flag.Int("P", 4000, "Port")
-	user     = flag.String("u", "4A7D3bbkQWsWSEH.guest", "user")
-	password = flag.String("pass", "11111111", "password")
-	database = flag.String("D", "xkcd", "database")
+	host     = flag.String("H", xkcdsay.DefaultHost, "Host")
+	port     = flag.Int("P", xkcdsay.DefaultPort, "Port")
+	user     = flag.String("u", xkcdsay.DefaultGuest, "user")
+	password = flag.String("pass", xkcdsay.DefaultPass, "password")
+	database = flag.String("D", xkcdsay.DefaultDB, "database")
 )
 
 func panicErr(err error) {
@@ -30,7 +32,12 @@ func panicErr(err error) {
 func main() {
 	flag.Parse()
 
-	dsn := fmt.Sprintf("%s@tcp(%s:%d)/%s", strings.Join([]string{*user, *password}, ":"),
+	mysql.RegisterTLSConfig("tidb", &tls.Config{
+		MinVersion: tls.VersionTLS12,
+		ServerName: *host,
+	})
+
+	dsn := fmt.Sprintf("%s@tcp(%s:%d)/%s?tls=tidb", strings.Join([]string{*user, *password}, ":"),
 		*host, *port, *database)
 	db, err := sql.Open("mysql", dsn)
 	panicErr(err)
